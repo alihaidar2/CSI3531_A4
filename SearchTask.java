@@ -16,7 +16,9 @@ public class SearchTask {
 	private SearchJob [] searchJobs;
 	private String pattern;
 	private KMP kmp;
-	
+	int currIndex = 0;
+	int finalIndex = 3;
+	int j = 0;
 	/**
 	 * Constructor accepting an array of search jobs
 	 * @param searchJobs an array of search jobs
@@ -49,20 +51,20 @@ public class SearchTask {
 	 * Run the search by going through all the files one line at a time and looking for the pattern
 	 */
 	public void runSearch(){
-	
+		
 		// populating array with threads
-		for (int i = 0; i < searchJobs.length; i++) {
+		for (int i = currIndex; i < finalIndex; i++) {
 			threads[i] = new Thread(tg, "Worker" + Integer.toString(i));
 			threads[i].setDaemon(true);
 		}
 		
-		for (SearchJob job: searchJobs){ // Go through the list of files
+		for (j = currIndex; j<finalIndex; j++){ // Go through the list of files
 			
 			//for each job in the array, create a thread
 			Thread thread = new Thread(new Runnable() {
 					public void run() {
 						try {
-							FileReader fr = new FileReader(job.getFile()); 
+							FileReader fr = new FileReader(searchJobs[j].getFile()); 
 							BufferedReader br = new BufferedReader(fr); 
 				
 							String line; 
@@ -76,7 +78,7 @@ public class SearchTask {
 								int pos= kmp.search(line, pattern);
 						
 								if (pos > 0) { //if the pattern is found, print it
-									foundPattern(job.getName(), counter);
+									foundPattern(searchJobs[j].getName(), counter);
 								}
 							}
 				
