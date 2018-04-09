@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 
-public class SearchTask {
+public class SearchTask extends Thread {
 	
 	protected static ThreadGroup tg = new ThreadGroup("Threads");
 	protected static Thread[] threads = new Thread[4];
@@ -44,6 +44,50 @@ public class SearchTask {
 		this.pattern = pattern;
 		
 		kmp = new KMP();
+	}
+	
+	//Another constructor taking a TaskGroup as argument.
+	// Basically same as other constructors
+	public SearchTask(ThreadGroup group, SearchJob searchJob, String pattern){
+		super(tg, "Thread"); // Need to add the thread to its parent group
+		this.searchJobs = new SearchJob [1];
+		searchJobs[0] = searchJob;
+		this.pattern = pattern;
+		kmp = new KMP();
+	}
+	
+	public void run(){
+		this.runSearchPart2();
+	}
+	
+	public void runSearchPart2(){
+		for (SearchJob job: searchJobs){
+			try {
+				FileReader fr = new FileReader(job.getFile());
+				BufferedReader br = new BufferedReader(fr);
+				
+				String line;
+				int counter = 0;
+			
+				while((line=br.readLine()) != null){
+					counter++;
+					int pos= kmp.search(line, pattern);
+
+					if (pos > 0)
+						foundPattern(job.getName(), counter);
+				}
+				br.close();
+				throw new InterruptedException();
+
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			catch (InterruptedException e){
+				this.interrupt();
+				return;
+			}
+
+		}
 	}
 	
 	
