@@ -12,7 +12,7 @@ import java.util.ArrayList;
 public class SearchTask {
 	
 	protected static ThreadGroup tg = new ThreadGroup("Threads");
-	protected static Thread[] threads = new Thread[30];
+	protected static Thread[] threads = new Thread[4];
 	private SearchJob [] searchJobs;
 	private String pattern;
 	private KMP kmp;
@@ -52,7 +52,7 @@ public class SearchTask {
 	
 		// populating array with threads
 		for (int i = 0; i < searchJobs.length; i++) {
-			threads[i] = new MyThread(tg, "Worker" + Integer.toString(i));
+			threads[i] = new Thread(tg, "Worker" + Integer.toString(i));
 			threads[i].setDaemon(true);
 		}
 		
